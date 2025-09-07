@@ -3,8 +3,9 @@ using LabApi.Features.Wrappers;
 using LabApi.Loader.Features.Plugins;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
-using UnityEngine;
+using Debug = UnityEngine.Debug;
 using Logger = LabApi.Features.Console.Logger;
 
 namespace AntiSLCrush
@@ -14,7 +15,7 @@ namespace AntiSLCrush
         public override string Name => "AntiSLCrush";
         public override string Author => "angelseraphim.";
         public override string Description => "AntiSLCrush";
-        public override Version Version => new Version(2, 8, 1);
+        public override Version Version => new Version(2, 9, 0);
         public override Version RequiredApiVersion => new Version(1, 1, 1);
 
         internal static HashSet<string> BannedIp = new HashSet<string>();
@@ -64,7 +65,7 @@ namespace AntiSLCrush
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                var proc = new System.Diagnostics.Process();
+                Process proc = new Process();
                 proc.StartInfo.FileName = "sudo";
                 proc.StartInfo.Arguments = command;
                 proc.StartInfo.UseShellExecute = false;
@@ -113,7 +114,7 @@ namespace AntiSLCrush
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                var proc = new System.Diagnostics.Process();
+                Process proc = new Process();
                 proc.StartInfo.FileName = "sudo";
                 proc.StartInfo.Arguments = command;
                 proc.StartInfo.UseShellExecute = false;
