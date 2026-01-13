@@ -11,14 +11,14 @@ using Logger = LabApi.Features.Console.Logger;
 
 namespace AntiSLCrush
 {
-    public class Main : Plugin<Config>
+    public sealed class Main : Plugin<Config>
     {
-        public override string Name => "AntiSLCrush";
-        public override string Author => "ui_2506";
-        public override string Description => "AntiSLCrush";
-        public override Version Version => new Version(3, 0, 0);
-        public override Version RequiredApiVersion => new Version(1, 1, 1);
-        public override LoadPriority Priority => LoadPriority.Lowest;
+        public override string Name { get; } = "AntiSLCrush";
+        public override string Author { get; } = "ui_2506";
+        public override string Description { get; } = "AntiSLCrush";
+        public override Version Version { get; } = new Version(3, 0, 0);
+        public override Version RequiredApiVersion { get; } = new Version(1, 1, 1);
+        public override LoadPriority Priority { get; } = LoadPriority.Lowest;
 
         internal static readonly List<string> BannedIp = new List<string>();
         internal static readonly List<string> BannedHEX = new List<string>();

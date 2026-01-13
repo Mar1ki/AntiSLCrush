@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using InventorySystem.Items.Pickups;
 using InventorySystem.Items.Usables.Scp330;
 using UnityEngine;
 using Logger = LabApi.Features.Console.Logger;
@@ -11,13 +10,11 @@ namespace AntiSLCrush.Patches
     {
         private static float _lastCalledTime = 0;
 
-        private static bool Prefix(Scp330Bag __instance, ItemPickupBase pickup)
+        private static bool Prefix(Scp330Bag __instance)
         {
-            string nickName = __instance.Owner?.nicknameSync?.MyNick ?? "NULL";
-
             if (_lastCalledTime + 0.01f > Time.time)
             {
-                Logger.Info($"[Scp330Bag.OnAdded] {nickName}. Too fast calling. Canceling call");
+                Logger.Info($"[Scp330Bag.OnAdded] {__instance.Owner?.nicknameSync?.MyNick ?? "NULL"}. Too fast calling. Canceling call");
                 return false;
             }
 
