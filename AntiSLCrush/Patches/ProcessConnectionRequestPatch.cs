@@ -1,21 +1,19 @@
 ﻿using HarmonyLib;
-using LabApi.Features.Console;
 using LiteNetLib;
 using LiteNetLib.Utils;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace AntiSLCrush.Patches
 {
     [HarmonyPatch(typeof(CustomLiteNetLib4MirrorTransport), nameof(CustomLiteNetLib4MirrorTransport.ProcessConnectionRequest))]
     internal static class ProcessConnectionRequestPatch
     {
-        internal static int FilteredConnectionCount = 0;
-        internal static readonly Dictionary<string, string> IpToHex = new Dictionary<string, string>();
-        internal static readonly Dictionary<string, int> MaxSeenHexCount = new Dictionary<string, int>();
-        internal static readonly HashSet<string> SeenHex = new HashSet<string>(); // Зачем 3 листа? Так надо.
+        private static readonly Dictionary<string, List<float>> _hexCount = new Dictionary<string, List<float>>();
+        private static readonly Dictionary<string, List<float>> _ipCount = new Dictionary<string, List<float>>();
 
-        private static bool Prefix(CustomLiteNetLib4MirrorTransport __instance, ConnectionRequest request)
+        private static bool Prefix(ConnectionRequest request)
         {
             string ip = request.RemoteEndPoint.Address.ToString();
 
@@ -31,66 +29,62 @@ namespace AntiSLCrush.Patches
 
             if (Main.BannedHEX.Contains(hex))
                 return false;
-            
-            if (request.Data.AvailableBytes < 50)
+
+            if (!_ipCount.TryGetValue(ip, out List<float> times))
+                times = new List<float>();
+
+            times.Add(Time.time);
+
+            ushort count = 0;
+
+            foreach (float time in times.ToArray())
             {
-                if (Main.config.ShowSuspiciousPacketLogs)
-                    Logger.Warn($"Too short handshake packet ({request.Data.AvailableBytes} bytes) from {ip} rejected as bot.");
-
-                if (Main.config.BanHex)
-                {
-                    Main.BanHexAtSystemLevel(hex, dataSize, "Too short handshake packet");
-                    return false;
-                }
-
-                if (FilteredConnectionCount == 0)
-                    WebHook.Send($"@everyone Suspicious packet filtered from {ip}! Please inform the plugin author about this data: {hex}");
-
-                FilteredConnectionCount++;
-                return false;
-            }
-
-            if (IpToHex.ContainsKey(ip))
-            {
-                if (MaxSeenHexCount.TryGetValue(ip, out int count))
-                {
-                    if (count > 20) //I'm too lazy to explain why this is necessary, but it is necessary.
-                    {
-                        if (Main.config.BanHex)
-                            Main.BanHexAtSystemLevel(hex, dataSize, "Too many HEX from same IP"); //Ну ладно, обьясню на русском. При входе игрок отправляет 2 раза разные HEX, и если одинаковых HEX много, то баним.
-                        
-                        if (Main.config.BanIp)
-                            Main.BanIpAtSystemLevel(ip, "Too many HEX from same IP");
-
-                        return false;
-                    }
-
-                    MaxSeenHexCount[ip]++;
-                }
+                if (time + 1 > Time.time)
+                    count++;
                 else
-                {
-                    MaxSeenHexCount[ip] = 1;
-                }
-
-                return true;
+                    times.Remove(time);
             }
 
-            if (SeenHex.Contains(hex))
+            if (count > 5)
             {
-                if (FilteredConnectionCount == 0)
-                {
-                    WebHook.Send($"@everyone Suspicious packet filtered from {ip}! Please inform the plugin author about this data: {hex}");
+                if (Main.config.BanHex)
+                    Main.BanHexAtSystemLevel(hex, dataSize, "Too many HEX from same IP");
 
-                    if (Main.config.BanHex)
-                        Main.BanHexAtSystemLevel(hex, dataSize, "Same HEX from other IP");
-                }
+                if (Main.config.BanIp)
+                    Main.BanIpAtSystemLevel(ip, "Too many HEX from same IP");
 
-                FilteredConnectionCount++;
                 return false;
             }
 
-            IpToHex[ip] = hex;
-            SeenHex.Add(hex);
+            _ipCount[ip] = times;
+
+            if (!_hexCount.TryGetValue(hex, out times))
+                times = new List<float>();
+
+            times.Add(Time.time);
+
+            count = 0;
+
+            foreach (float time in times.ToArray())
+            {
+                if (time + 1 > Time.time)
+                    count++;
+                else
+                    times.Remove(time);
+            }
+
+            if (count > 5)
+            {
+                if (Main.config.BanHex)
+                    Main.BanHexAtSystemLevel(hex, dataSize, "Too many HEX.");
+
+                if (Main.config.BanIp)
+                    Main.BanIpAtSystemLevel(ip, "Too many HEX.");
+
+                return false;
+            }
+
+            _hexCount[hex] = times;
 
             return true;
         }

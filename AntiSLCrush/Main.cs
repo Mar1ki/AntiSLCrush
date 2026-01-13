@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using LabApi.Features.Wrappers;
 using LabApi.Loader.Features.Plugins;
+using LabApi.Loader.Features.Plugins.Enums;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,13 +14,14 @@ namespace AntiSLCrush
     public class Main : Plugin<Config>
     {
         public override string Name => "AntiSLCrush";
-        public override string Author => "angelseraphim.";
+        public override string Author => "ui_2506";
         public override string Description => "AntiSLCrush";
-        public override Version Version => new Version(2, 9, 0);
+        public override Version Version => new Version(3, 0, 0);
         public override Version RequiredApiVersion => new Version(1, 1, 1);
+        public override LoadPriority Priority => LoadPriority.Lowest;
 
-        internal static HashSet<string> BannedIp = new HashSet<string>();
-        internal static HashSet<string> BannedHEX = new HashSet<string>();
+        internal static readonly List<string> BannedIp = new List<string>();
+        internal static readonly List<string> BannedHEX = new List<string>();
 
         internal static Config config;
         private static Harmony harmony;

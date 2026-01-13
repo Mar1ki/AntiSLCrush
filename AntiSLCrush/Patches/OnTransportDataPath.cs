@@ -1,25 +1,29 @@
 ﻿using HarmonyLib;
 using Mirror;
-using System;
+using System.Collections.Generic;
 
 namespace AntiSLCrush.Patches
 {
     [HarmonyPatch(typeof(NetworkServer), nameof(NetworkServer.OnTransportData))]
     internal static class OnTransportDataPath
     {
-        private static bool Prefix(int connectionId, ArraySegment<byte> data, int channelId)
-        {
-            if (!NetworkServer.connections.TryGetValue(connectionId, out var connection))
-            {
-                Main.Log($"[OnTransportDataPath] HandleData Unknown connectionId:{connectionId}, disconnecting.");
+        private static readonly List<int> _kickedList = new List<int>();
 
-                if (Transport.active != null)
+        private static bool Prefix(int connectionId)
+        {
+            if (connectionId == 0)
+                return true;
+
+            if (!NetworkServer.connections.ContainsKey(connectionId))
+            {
+                Main.Log($"[OnTransportDataPath] HandleData Unknown connectionId:{connectionId}, trying to disconnect.");
+
+                if (!_kickedList.Contains(connectionId))
                 {
-                    Transport.active.ServerDisconnect(connectionId);
-                }
-                else
-                {
-                    Main.Log("[OnTransportDataPath] No active transport found. Cannot disconnect.");
+                    Main.Log($"[OnTransportDataPath] HandleData Unknown connectionId:{connectionId}, disconnecting.");
+                    Transport.active?.ServerDisconnect(connectionId);
+
+                    _kickedList.Add(connectionId);
                 }
 
                 return false;

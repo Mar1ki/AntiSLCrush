@@ -1,14 +1,12 @@
 ﻿using HarmonyLib;
-using LabApi.Features.Wrappers;
 using Mirror;
+using System.Collections.Generic;
 
 namespace AntiSLCrush.Patches
 {
     [HarmonyPatch(typeof(NetworkServer), nameof(NetworkServer.BroadcastToConnection))]
     internal static class BroadcastToConnectionPatch
     {
-        internal static int NullConnectionCount = 0;
-
         private static bool Prefix(NetworkConnectionToClient connection)
         {
             if (connection == null)
@@ -17,31 +15,20 @@ namespace AntiSLCrush.Patches
                 return false;
             }
 
-            connection.observing.RemoveWhere(item =>
-            {
-                if (item == null || item.gameObject == null)
-                {
-                    Main.Log($"[BroadcastToConnectionPatch] Removing null entry in observing list for connectionId={connection.connectionId}.");
-
-                    if (Main.config.MaxNullBroadcastCount > 0)
-                    {
-                        NullConnectionCount++;
-
-                        if (NullConnectionCount > Main.config.MaxNullBroadcastCount)
-                        {
-                            Main.Log("[BroadcastToConnectionPatch] Too many nulls in NetworkConnectionToClient. Restarting server.", true);
-                            Server.Restart();
-                        }
-                    }
-
-                    return true;
-                }
-
-                return false;
-            });
+            List<NetworkIdentity> forRemove = null;
 
             foreach (NetworkIdentity item in connection.observing)
             {
+                if (item == null || item.gameObject == null)
+                {
+                    if (forRemove == null)
+                        forRemove = new List<NetworkIdentity>();
+
+                    forRemove.Add(item);
+
+                    continue;
+                }
+
                 NetworkWriter networkWriter = NetworkServer.SerializeForConnection(item, connection);
 
                 if (networkWriter != null)
@@ -53,6 +40,14 @@ namespace AntiSLCrush.Patches
                     };
 
                     connection.Send(message);
+                }
+            }
+
+            if (forRemove != null)
+            {
+                foreach (NetworkIdentity item in forRemove)
+                {
+                    connection.observing.Remove(item);
                 }
             }
 

@@ -8,36 +8,38 @@ namespace AntiSLCrush.Patches
     {
         private static bool Prefix(NetworkConnectionToClient conn)
         {
-            if (conn == null || !conn.isReady || conn.identity == null)
+            if (conn == null || !conn.isReady)
             {
                 Main.Log("[SpawnObserversForConnection] conn or conn.identity is null");
-                return false;
+                return true;
             }
 
             conn.Send(default(ObjectSpawnStartedMessage));
 
-            foreach (NetworkIdentity value in NetworkServer.spawned.Values)
+            foreach (NetworkIdentity identity in NetworkServer.spawned.Values)
             {
-                if (value == null || value.gameObject == null || !value.gameObject.activeSelf)
-                {
-                    Main.Log("[SpawnObserversForConnection] (NetworkServer.spawned.Values) value or value.gameObject is null");
+                if (identity == null || identity.gameObject == null || !identity.gameObject.activeSelf)
                     continue;
-                }
 
-                if (value.visible == Visibility.ForceShown)
+                if (identity.visible == Visibility.ForceShown)
                 {
-                    value.AddObserver(conn);
+                    identity.AddObserver(conn);
                 }
-                else if (value.visible == Visibility.Default)
+                else
                 {
+                    if (identity.visible == Visibility.ForceHidden || identity.visible != Visibility.Default)
+                        continue;
+
                     if (NetworkServer.aoi != null)
                     {
-                        if (NetworkServer.aoi.OnCheckObserver(value, conn))
-                            value.AddObserver(conn);
+                        if (NetworkServer.aoi.OnCheckObserver(identity, conn))
+                        {
+                            identity.AddObserver(conn);
+                        }
                     }
                     else
                     {
-                        value.AddObserver(conn);
+                        identity.AddObserver(conn);
                     }
                 }
             }
