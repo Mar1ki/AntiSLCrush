@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Mirror;
+using System.Collections.Generic;
 
 namespace AntiSLCrush.Patches
 {
@@ -14,12 +15,23 @@ namespace AntiSLCrush.Patches
                 return true;
             }
 
+            List<uint> forRemove = null;
+
             conn.Send(default(ObjectSpawnStartedMessage));
 
-            foreach (NetworkIdentity identity in NetworkServer.spawned.Values)
+            foreach (var item in NetworkServer.spawned)
             {
+                NetworkIdentity identity = item.Value;
+
                 if (identity == null || identity.gameObject == null || !identity.gameObject.activeSelf)
+                {
+                    if (forRemove == null)
+                        forRemove = new List<uint>();
+
+                    forRemove.Add(item.Key);
+
                     continue;
+                }
 
                 if (identity.visible == Visibility.ForceShown)
                 {
@@ -45,6 +57,17 @@ namespace AntiSLCrush.Patches
             }
 
             conn.Send(default(ObjectSpawnFinishedMessage));
+
+            if (forRemove != null)
+            {
+                Main.Log("[SpawnObserversForConnection] Null NetworkIdentitys founded! Trying remove..");
+
+                foreach (uint item in forRemove)
+                    NetworkServer.spawned.Remove(item);
+
+                Main.Log("[SpawnObserversForConnection] Null NetworkIdentitys removed.");
+            }
+
             return false;
         }
     }

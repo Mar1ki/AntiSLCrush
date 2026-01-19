@@ -47,9 +47,6 @@ namespace AntiSLCrush.Patches
 
             if (count > 5)
             {
-                if (Main.config.BanHex)
-                    Main.BanHexAtSystemLevel(hex, dataSize, "Too many HEX from same IP");
-
                 if (Main.config.BanIp)
                     Main.BanIpAtSystemLevel(ip, "Too many HEX from same IP");
 
@@ -77,9 +74,6 @@ namespace AntiSLCrush.Patches
             {
                 if (Main.config.BanHex)
                     Main.BanHexAtSystemLevel(hex, dataSize, "Too many HEX.");
-
-                if (Main.config.BanIp)
-                    Main.BanIpAtSystemLevel(ip, "Too many HEX.");
 
                 return false;
             }

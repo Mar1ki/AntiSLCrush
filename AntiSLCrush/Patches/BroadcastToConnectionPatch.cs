@@ -45,10 +45,12 @@ namespace AntiSLCrush.Patches
 
             if (forRemove != null)
             {
+                Main.Log("[BroadcastToConnectionPatch] Null NetworkIdentitys founded! Trying remove..");
+
                 foreach (NetworkIdentity item in forRemove)
-                {
                     connection.observing.Remove(item);
-                }
+
+                Main.Log("[BroadcastToConnectionPatch] Null NetworkIdentitys removed.");
             }
 
             return false;

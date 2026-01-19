@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using InventorySystem.Items.Usables.Scp330;
 using UnityEngine;
-using Logger = LabApi.Features.Console.Logger;
 
 namespace AntiSLCrush.Patches
 {
@@ -14,7 +13,7 @@ namespace AntiSLCrush.Patches
         {
             if (_lastCalledTime + 0.01f > Time.time)
             {
-                Logger.Info($"[Scp330Bag.OnAdded] {__instance.Owner?.nicknameSync?.MyNick ?? "NULL"}. Too fast calling. Canceling call");
+                Main.Log($"[Scp330Bag.OnAdded] {__instance.Owner?.nicknameSync?.MyNick ?? "NULL"}. Too fast calling. Canceling call", true);
                 return false;
             }
 
