@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Mirror;
+using NorthwoodLib.Pools;
 using System.Collections.Generic;
 
 namespace AntiSLCrush.Patches
@@ -11,7 +12,7 @@ namespace AntiSLCrush.Patches
         {
             if (connection == null)
             {
-                Main.Log("[BroadcastToConnectionPatch] Connection is null in BroadcastToConnectionPatch.", true);
+                Main.Log("[BroadcastToConnectionPatch] Connection is null in BroadcastToConnectionPatch.");
                 return false;
             }
 
@@ -19,10 +20,10 @@ namespace AntiSLCrush.Patches
 
             foreach (NetworkIdentity item in connection.observing)
             {
-                if (item == null || item.gameObject == null)
+                if (item == null)
                 {
                     if (forRemove == null)
-                        forRemove = new List<NetworkIdentity>();
+                        forRemove = ListPool<NetworkIdentity>.Shared.Rent();
 
                     forRemove.Add(item);
 
@@ -48,7 +49,13 @@ namespace AntiSLCrush.Patches
                 Main.Log("[BroadcastToConnectionPatch] Null NetworkIdentitys founded! Trying remove..");
 
                 foreach (NetworkIdentity item in forRemove)
+                {
+                    Main.Log($"[BroadcastToConnectionPatch] {item.assetId} (netId={item.netId}) will be removed!");
+
                     connection.observing.Remove(item);
+                }
+
+                ListPool<NetworkIdentity>.Shared.Return(forRemove);
 
                 Main.Log("[BroadcastToConnectionPatch] Null NetworkIdentitys removed.");
             }

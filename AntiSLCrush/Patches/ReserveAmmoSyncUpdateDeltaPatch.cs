@@ -2,7 +2,9 @@
 using InventorySystem;
 using InventorySystem.Items.Autosync;
 using InventorySystem.Items.Firearms.Ammo;
+using NorthwoodLib.Pools;
 using PlayerRoles.Spectating;
+using System.Collections.Generic;
 using Utils.Networking;
 using static InventorySystem.Items.Firearms.Ammo.ReserveAmmoSync;
 
@@ -13,6 +15,8 @@ namespace AntiSLCrush.Patches
     {
         private static bool Prefix()
         {
+            List<AutosyncItem> forRemove = null;
+
             foreach (AutosyncItem instance in AutosyncItem.Instances)
             {
                 if (!TryUnpack(instance, out ReferenceHub owner, out ItemType ammoType))
@@ -20,7 +24,12 @@ namespace AntiSLCrush.Patches
 
                 if (owner == null)
                 {
-                    Main.Log("[ReserveAmmoSyncUpdateDeltaPatch] Null");
+                    if (forRemove == null)
+                        forRemove = ListPool<AutosyncItem>.Shared.Rent();
+
+                    forRemove.Add(instance);
+
+                    Main.Log($"[ReserveAmmoSyncUpdateDeltaPatch] {instance.Owner?.nicknameSync?.MyNick ?? "NULL"} ({instance.Owner?.authManager?.UserId ?? "NULL"}) ReferenceHub is null and will be remover from AutosyncItem.Instances!");
                     continue;
                 }
 
@@ -32,6 +41,14 @@ namespace AntiSLCrush.Patches
                     orAdd.AmmoCount = curAmmo;
                     new ReserveAmmoMessage(owner, ammoType).SendToHubsConditionally((ReferenceHub x) => x.roleManager.CurrentRole is SpectatorRole);
                 }
+            }
+
+            if (forRemove != null)
+            {
+                foreach (AutosyncItem item in forRemove)
+                    AutosyncItem.Instances.Remove(item);
+
+                ListPool<AutosyncItem>.Shared.Return(forRemove);
             }
 
             return false;

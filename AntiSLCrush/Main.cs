@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Logger = LabApi.Features.Console.Logger;
 
@@ -23,36 +24,40 @@ namespace AntiSLCrush
         internal static readonly List<string> BannedIp = new List<string>();
         internal static readonly List<string> BannedHEX = new List<string>();
 
-        internal static Config config;
-        private static Harmony harmony;
+        internal static float LastLogTime = 0;
+
+        internal static Config PluginConfig;
+
+        private Harmony _harmony;
 
         public override void Enable()
         {
-            config = Config;
-            harmony = new Harmony(Name);
+            PluginConfig = Config;
+            _harmony = new Harmony(Name);
 
-            harmony.PatchAll();
+            _harmony.PatchAll();
         }
 
         public override void Disable()
         {
-            harmony.UnpatchAll();
+            _harmony.UnpatchAll();
 
-            config = null;
-            harmony = null;
+            PluginConfig = null;
+            _harmony = null;
         }
 
         internal static void Log(string message, bool isError = false)
         {
             Debug.LogWarning(message);
 
-            if (isError)
+            if (isError && LastLogTime + 1 < Time.time) // DONT SPAM ME!
             {
                 Logger.Error(message);
+                LastLogTime = Time.time;
             }
             else
             {
-                Logger.Debug(message, config.Debug);
+                Logger.Debug(message, PluginConfig.Debug);
             }
         }
 

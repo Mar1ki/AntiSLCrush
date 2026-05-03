@@ -10,7 +10,7 @@ namespace AntiSLCrush
     {
         internal static async void Send(string message)
         {
-            if (string.IsNullOrEmpty(Main.config.DiscordWebHook))
+            if (string.IsNullOrEmpty(Main.PluginConfig.DiscordWebHook))
             {
                 Logger.Error("Webhook url is empty");
                 return;
@@ -35,7 +35,7 @@ namespace AntiSLCrush
                 string jsonPayload = Encoding.UTF8.GetString(jsonBytes);
                 StringContent httpContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await httpClient.PostAsync(Main.config.DiscordWebHook, httpContent);
+                HttpResponseMessage response = await httpClient.PostAsync(Main.PluginConfig.DiscordWebHook, httpContent);
             }
         }
     }

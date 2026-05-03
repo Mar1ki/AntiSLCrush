@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Mirror;
+using NorthwoodLib.Pools;
 using System.Collections.Generic;
 
 namespace AntiSLCrush.Patches
@@ -26,7 +27,7 @@ namespace AntiSLCrush.Patches
                 if (identity == null || identity.gameObject == null || !identity.gameObject.activeSelf)
                 {
                     if (forRemove == null)
-                        forRemove = new List<uint>();
+                        forRemove = ListPool<uint>.Shared.Rent();
 
                     forRemove.Add(item.Key);
 
@@ -64,6 +65,8 @@ namespace AntiSLCrush.Patches
 
                 foreach (uint item in forRemove)
                     NetworkServer.spawned.Remove(item);
+
+                ListPool<uint>.Shared.Return(forRemove);
 
                 Main.Log("[SpawnObserversForConnection] Null NetworkIdentitys removed.");
             }
