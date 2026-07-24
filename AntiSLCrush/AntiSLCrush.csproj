@@ -75,18 +75,13 @@
   <ItemGroup>
     <Compile Include="Config.cs" />
     <Compile Include="Patches\BroadcastToConnectionPatch.cs" />
-    <Compile Include="Patches\FirstPersonMovementModulePatch.cs" />
-    <Compile Include="Patches\NetworkConnectionDisconnect.cs" />
     <Compile Include="Patches\Scp330BagOnAddedPatch.cs" />
     <Compile Include="Patches\OnTransportDataPath.cs" />
     <Compile Include="Main.cs" />
-    <Compile Include="Patches\ProcessConnectionRequestPatch.cs" />
     <Compile Include="Patches\ReserveAmmoSyncUpdateDeltaPatch.cs" />
-    <Compile Include="Patches\ScpSpawnerPatch.cs" />
     <Compile Include="Patches\SecureNetThreading.cs" />
     <Compile Include="Patches\SpawnObserversForConnectionPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WebHook.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

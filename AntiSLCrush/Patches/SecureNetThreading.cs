@@ -1,4 +1,13 @@
-﻿using HarmonyLib;
+﻿// This file contains code derived from:
+// https://github.com/I-WAS-FUTURE/AntiDDoS
+//
+// Original code copyright belongs to its original author(s).
+// Modified by ui_2506.
+//
+// The original code remains subject to the license of the
+// I-WAS-FUTURE/AntiDDoS repository.
+
+using HarmonyLib;
 using LabApi.Features.Console;
 using Mirror;
 using System;
