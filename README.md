@@ -27,7 +27,3 @@ sudo apt install iptables
 * This plugin **requires a Linux-based operating system** (e.g., Ubuntu, Debian).
 * The plugin **requires sudo privileges** to function correctly. If your server is running without elevated permissions, **the plugin will not work correctly**.
 ## If you are unable to follow these steps, disable ``ban_hex`` and ``ban_ip`` in the config
-
----
-
-* The code is open and license-free — feel free to reuse or modify parts of it as needed.
