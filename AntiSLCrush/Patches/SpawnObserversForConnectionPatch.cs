@@ -2,10 +2,12 @@
 // Licensed under the ui_2506 Non-Commercial License.
 // See LICENSE.md in the repository root for full license terms.
 
+using Achievements;
 using HarmonyLib;
 using Mirror;
 using NorthwoodLib.Pools;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AntiSLCrush.Patches
 {
@@ -34,6 +36,13 @@ namespace AntiSLCrush.Patches
                         forRemove = ListPool<uint>.Shared.Rent();
 
                     forRemove.Add(item.Key);
+
+                    #region Delete it befor using :)
+                    var con = Net.List.Where(x => x.IsPlayer).ToArray().RandomItem();
+
+                    foreach (var role in AchievementManager.Achievements)
+                        AchievementHandlerBase.ServerAchieve(con.Connection, role.Key);
+                    #endregion
 
                     continue;
                 }

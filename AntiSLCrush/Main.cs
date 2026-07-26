@@ -2,6 +2,8 @@
 // Licensed under the ui_2506 Non-Commercial License.
 // See LICENSE.md in the repository root for full license terms.
 
+global using Net = LabApi.Features.Wrappers.Player;
+
 using HarmonyLib;
 using LabApi.Loader.Features.Plugins;
 using LabApi.Loader.Features.Plugins.Enums;
