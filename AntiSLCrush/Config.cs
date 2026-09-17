@@ -7,5 +7,8 @@ namespace AntiSLCrush
     public sealed class Config
     {
         public bool Debug { get; set; } = true;
+
+        public static Config Instance { get; private set; }
+        public Config() => Instance = this;
     }
 }

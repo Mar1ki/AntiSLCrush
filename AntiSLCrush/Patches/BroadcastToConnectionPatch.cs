@@ -26,9 +26,7 @@ namespace AntiSLCrush.Patches
             {
                 if (item == null)
                 {
-                    if (forRemove == null)
-                        forRemove = ListPool<NetworkIdentity>.Shared.Rent();
-
+                    forRemove ??= ListPool<NetworkIdentity>.Shared.Rent();
                     forRemove.Add(item);
 
                     continue;

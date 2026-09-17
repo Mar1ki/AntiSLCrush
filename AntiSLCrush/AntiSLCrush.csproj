@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-    <PropertyGroup>
+  <PropertyGroup>
     <LangVersion Condition="'$(MSBuildProjectExtension)'=='.csproj'">preview</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
@@ -38,20 +38,15 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>..\..\..\..\..\Desktop\Important\SCPSL-DLLs\Other\0Harmony.dll</HintPath>
-    </Reference>
-    <Reference Include="Assembly-CSharp-firstpass-Publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Desktop\Important\SCPSL-DLLs\SCP Secret Laboratory\Assembly-CSharp-firstpass-Publicized.dll</HintPath>
+    <Reference Include="0Harmony, Version=2.4.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lib.Harmony.2.4.2\lib\net48\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-Publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Desktop\Important\SCPSL-DLLs\SCP Secret Laboratory\Assembly-CSharp-Publicized.dll</HintPath>
     </Reference>
-    <Reference Include="LabApi, Version=1.1.5.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Desktop\Important\SCPSL-DLLs\SCP Secret Laboratory\LabApi.dll</HintPath>
+    <Reference Include="LabApi, Version=1.1.7.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Northwood.LabAPI.1.1.7\lib\net48\LabApi.dll</HintPath>
     </Reference>
     <Reference Include="Mirror-Publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -71,20 +66,23 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="UnityEngine.CoreModule_publicized">
-      <HintPath>..\..\..\..\..\Desktop\Important\SCPSL-DLLs\SCP Secret Laboratory\UnityEngine.CoreModule_publicized.dll</HintPath>
+    <Reference Include="UnityEngine.CoreModule-Publicized">
+      <HintPath>..\..\..\..\..\Desktop\Important\SCPSL-DLLs\SCP Secret Laboratory\UnityEngine.CoreModule-Publicized.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config.cs" />
     <Compile Include="Patches\BroadcastToConnectionPatch.cs" />
     <Compile Include="Patches\Scp330BagOnAddedPatch.cs" />
-    <Compile Include="Patches\OnTransportDataPath.cs" />
+    <Compile Include="Patches\OnTransportDataPatch.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Patches\ReserveAmmoSyncUpdateDeltaPatch.cs" />
     <Compile Include="Patches\SecureNetThreading.cs" />
     <Compile Include="Patches\SpawnObserversForConnectionPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

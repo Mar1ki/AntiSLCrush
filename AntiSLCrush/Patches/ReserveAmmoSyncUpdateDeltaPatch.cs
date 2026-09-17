@@ -28,9 +28,7 @@ namespace AntiSLCrush.Patches
 
                 if (owner == null)
                 {
-                    if (forRemove == null)
-                        forRemove = ListPool<AutosyncItem>.Shared.Rent();
-
+                    forRemove ??= ListPool<AutosyncItem>.Shared.Rent();
                     forRemove.Add(instance);
 
                     Main.Log($"[ReserveAmmoSyncUpdateDeltaPatch] {instance.Owner?.nicknameSync?.MyNick ?? "NULL"} ({instance.Owner?.authManager?.UserId ?? "NULL"}) ReferenceHub is null and will be remover from AutosyncItem.Instances!");

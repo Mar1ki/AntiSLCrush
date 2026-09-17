@@ -2,8 +2,7 @@
 // Licensed under the ui_2506 Non-Commercial License.
 // See LICENSE.md in the repository root for full license terms.
 
-global using Net = LabApi.Features.Wrappers.Player;
-
+using AntiSLCrush.Patches;
 using HarmonyLib;
 using LabApi.Loader.Features.Plugins;
 using LabApi.Loader.Features.Plugins.Enums;
@@ -19,44 +18,41 @@ namespace AntiSLCrush
         public override string Name { get; } = "AntiSLCrush";
         public override string Author { get; } = "ui_2506";
         public override string Description { get; } = "AntiSLCrush";
-        public override Version Version { get; } = new Version(3, 0, 0);
-        public override Version RequiredApiVersion { get; } = new Version(1, 1, 1);
+        public override Version Version { get; } = new Version(3, 1, 0);
+        public override Version RequiredApiVersion { get; } = new Version(1, 1, 7);
         public override LoadPriority Priority { get; } = LoadPriority.Lowest;
 
-        internal static float LastLogTime = 0;
-
-        internal static Config PluginConfig;
-
-        private Harmony _harmony;
+        private static float _lastLogTime = 0;
+        private static Harmony _harmony;
 
         public override void Enable()
         {
-            PluginConfig = Config;
             _harmony = new Harmony(Name);
-
             _harmony.PatchAll();
+
+            LabApi.Events.Handlers.ServerEvents.RoundRestarted += OnTransportDataPatch.Clear;
         }
 
         public override void Disable()
         {
             _harmony.UnpatchAll();
-
-            PluginConfig = null;
             _harmony = null;
+
+            LabApi.Events.Handlers.ServerEvents.RoundRestarted -= OnTransportDataPatch.Clear;
         }
 
         internal static void Log(string message, bool isError = false)
         {
             Debug.LogWarning(message);
 
-            if (isError && LastLogTime + 1 < Time.time)
+            if (isError && _lastLogTime + 1 < Time.time)
             {
                 Logger.Error(message);
-                LastLogTime = Time.time;
+                _lastLogTime = Time.time;
             }
             else
             {
-                Logger.Debug(message, PluginConfig.Debug);
+                Logger.Debug(message, Config.Instance.Debug);
             }
         }
     }
