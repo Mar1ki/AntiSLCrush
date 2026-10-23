@@ -36,7 +36,7 @@ namespace AntiSLCrush.Patches
 
                 if (networkWriter != null)
                 {
-                    EntityStateMessage message = new EntityStateMessage
+                    EntityStateMessage message = new()
                     {
                         netId = item.netId,
                         payload = networkWriter.ToArraySegment()

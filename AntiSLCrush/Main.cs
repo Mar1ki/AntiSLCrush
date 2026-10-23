@@ -2,6 +2,9 @@
 // Licensed under the ui_2506 Non-Commercial License.
 // See LICENSE.md in the repository root for full license terms.
 
+global using Logger = LabApi.Features.Console.Logger;
+
+using AntiSLCrush.Events;
 using AntiSLCrush.Patches;
 using HarmonyLib;
 using LabApi.Loader.Features.Plugins;
@@ -9,36 +12,39 @@ using LabApi.Loader.Features.Plugins.Enums;
 using System;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
-using Logger = LabApi.Features.Console.Logger;
 
 namespace AntiSLCrush
 {
     public sealed class Main : Plugin<Config>
     {
-        public override string Name { get; } = "AntiSLCrush";
+        public const string PluginName = "AntiSLCrush";
+
+        public override string Name { get; } = PluginName;
         public override string Author { get; } = "ui_2506";
-        public override string Description { get; } = "AntiSLCrush";
-        public override Version Version { get; } = new Version(3, 1, 0);
-        public override Version RequiredApiVersion { get; } = new Version(1, 1, 7);
+        public override string Description { get; } = PluginName;
+        public override Version Version { get; } = new Version(3, 2, 0);
+        public override Version RequiredApiVersion { get; } = LabApi.Features.LabApiProperties.CurrentVersion;
         public override LoadPriority Priority { get; } = LoadPriority.Lowest;
 
         private static float _lastLogTime = 0;
-        private static Harmony _harmony;
+        private static readonly Harmony _harmony = new(PluginName);
 
         public override void Enable()
         {
-            _harmony = new Harmony(Name);
             _harmony.PatchAll();
 
             LabApi.Events.Handlers.ServerEvents.RoundRestarted += OnTransportDataPatch.Clear;
+
+            RunInAds.Register();
         }
 
         public override void Disable()
         {
-            _harmony.UnpatchAll();
-            _harmony = null;
+            _harmony.UnpatchAll(_harmony.Id);
 
             LabApi.Events.Handlers.ServerEvents.RoundRestarted -= OnTransportDataPatch.Clear;
+
+            RunInAds.Unregister();
         }
 
         internal static void Log(string message, bool isError = false)

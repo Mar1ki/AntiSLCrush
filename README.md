@@ -14,3 +14,17 @@ It adds additional protection and stability to your server.
 1. Download the latest release from the [Releases](../../releases) page.
 2. Place the `.dll` file into your server's **LabApi** plugin directory.
 3. Configure `config.yml` as needed.
+
+## Building
+
+The SDK-style project targets .NET Framework 4.8. Install a .NET SDK with C# 12 or newer support and the .NET Framework 4.8 targeting pack.
+NuGet dependencies are restored through `PackageReference`.
+
+Build with the publicized game assemblies from your server version:
+
+```powershell
+dotnet build AntiSLCrush.sln -c Release -p:GameReferencesPath="C:\path\to\game-assemblies"
+```
+
+The assembly directory must contain `Assembly-CSharp-Publicized.dll`, `Mirror-Publicized.dll`, `UnityEngine.CoreModule-Publicized.dll`, `NorthwoodLib.dll`, and `Pooling.dll`.
+The plugin is written to `AntiSLCrush/bin/Release/AntiSLCrush.dll`.

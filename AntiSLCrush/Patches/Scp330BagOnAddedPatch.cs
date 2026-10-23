@@ -15,7 +15,7 @@ namespace AntiSLCrush.Patches
 
         private static bool Prefix(Scp330Bag __instance)
         {
-            if (_lastCalledTime + 0.01f > Time.time)
+            if (_lastCalledTime == Time.time)
             {
                 Main.Log($"[Scp330Bag.OnAdded] {__instance.Owner?.nicknameSync?.MyNick ?? "NULL"}. Too fast calling. Canceling call", true);
                 return false;

@@ -8,7 +8,6 @@
 // I-WAS-FUTURE/AntiDDoS repository.
 
 using HarmonyLib;
-using LabApi.Features.Console;
 using Mirror;
 using System;
 using System.Linq;
